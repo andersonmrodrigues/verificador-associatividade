@@ -1,0 +1,143 @@
+﻿<html><head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <title>Verificador de Associatividade</title>
+</head>
+
+<body>
+  <br>
+  <br>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        Verificador de Associatividade
+      </div>
+      <div class="card-body">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Informe o Conjunto de Letras/Numeros Separados por Virgula ex.:'1,2,3,4,5'" aria-label="Informe o Conjunto de Letras/Numeros Separados por Virgula ex.:'1,2,3,4,5'" aria-describedby="basic-addon2" id="conj" name="conj">
+          <div class="input-group-append">
+            <button class="btn btn-outline-success" onclick="view()" id="conj_ok" name="conj_ok" type="button">Montar Tabela</button>
+          </div>
+        </div>
+        <hr>
+        <br>
+        <div id="div_tab" style="display:none" align="center">
+        </div>
+        <div id="div_oper" style="display:none">
+          <button type="button" id="asso_ok" name="asso_ok" class="btn btn-secondary btn-lg btn-block" onclick="verifica()">Verificar Associatividade</button>
+        </div>
+       <br>
+        <div id="naoAssoc" class="alert alert-danger" role="alert" style="display: none;">
+          <h5 class="alert-heading">Não é associativa pois: </h5>
+          <div id="testes">
+          </div>
+          <p class="mb-0" id="fgAssociativa"></p>
+        </div>
+        <div id="assoc" class="alert alert-success" role="alert" style="display: none">
+          É associativa!
+        </div>
+        <br>
+        <blockquote class="blockquote mb-0">
+          <footer class="blockquote-footer">Trabalho para a disciplina de Matemática Discreta</footer>
+          <footer class="blockquote-footer">Desenvolvido por Braian Wegmann Schuster e Anderson Maik Rodrigues</footer>
+        </blockquote>
+
+      </div>
+
+
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="https://github.com/makeusabrew/bootbox/releases/download/v4.4.0/bootbox.min.js"></script>
+
+
+
+<script>
+  var array_assoc = new Array();
+  var conj_as = new Array();
+
+  function view() {
+    $("#naoAssoc").hide();
+    $("#assoc").hide();
+    array_assoc = new Array();
+    var conj_ajuda = document.getElementById('conj').value;
+    conj = conj_ajuda.split(",");
+    conj_as = conj_ajuda.split(",");
+
+    conj.unshift('*');
+    var table = "<table class='table table-bordered'>";
+
+    var ii = 0;
+    var pp = 0;
+    for (var i = 0; i < conj.length; i++) {
+      table += "<tr>";
+      for (var p = 0; p < conj.length; p++) {
+        table += "<td style='text-align:center'>";
+        if ((conj[pp] == '*') && (conj[ii] == '*')) {
+          table += "*";
+        } else if ((conj[pp] == '*') && (conj[ii] != '*')) {
+          table += conj[ii];
+        } else if ((conj[ii] == '*') && (conj[pp] != '*')) {
+          table += conj[pp];
+        } else {
+          array_assoc.push(conj[ii] + '###' + conj[pp]);
+          table += "<input type='text' class='form-control' aria-describedby='basic-addon1' height='5' id='" + conj[ii] + conj[pp] + "'/>";
+        }
+        table += "</td>";
+        pp++;
+      }
+      pp = 0;
+      table += "</tr>";
+      ii++;
+    }
+    table += "</table>";
+    document.getElementById('div_tab').innerHTML = table;
+    document.getElementById('div_tab').style.display = 'block';
+    document.getElementById('div_oper').style.display = 'block';
+  }
+
+  function verifica() {
+    $("#naoAssoc").hide();
+    $("#testes").empty();
+    $("#assoc").hide();
+    for (var u = 0; u < array_assoc.length; u++) {
+      var ajuda_array = array_assoc[u].split('###');
+      var a = ajuda_array[0];
+      var b = ajuda_array[1];
+      for (var i = 0; i < conj_as.length; i++) {
+        var c = conj_as[i];
+        var ab = document.getElementById(a + b).value;
+        if (document.getElementById(b + c) !== null) {
+          var bc = document.getElementById(b + c).value;
+        } else {
+          bootbox.alert("Possui algum valor na tabela que nao pertence ao conjunto");
+          return false;
+        }
+        if (document.getElementById(ab + c) !== null) {
+          var ab_c = document.getElementById(ab + c).value;
+        } else {
+          bootbox.alert("Possui algum valor na tabela que nao pertence ao conjunto");
+          return false;
+        }
+        if (document.getElementById(a + bc) !== null) {
+          var a_bc = document.getElementById(a + bc).value;
+        } else {
+          bootbox.alert("Possui algum valor na tabela que nao pertence ao conjunto");
+          return false;
+        }
+        if (ab_c != a_bc) {
+          var npassou = 'N';
+          $("#testes").append("<p>(" + a + " * " + b + ") * " + c + " <strong>=</strong> " + ab_c + " <strong>é diferente de</strong> " + a + " * " + "(" + b + " * " + c + ") <strong>=</strong>" + a_bc + "</p>");
+          $("#testes").append("<hr>");
+        }
+      }
+    }
+    if (npassou) {
+      $("#naoAssoc").show();
+    } else {
+      $("#assoc").show();
+    }
+
+  }
+</script></body></html>
